@@ -1,3 +1,5 @@
+import datetime
+
 import requests
 
 
@@ -6,4 +8,4 @@ def task_two():
     a = response.json().get('a')
     response = requests.put('http://127.0.0.1:5000/reset/params/b')
     b = response.json().get('b')
-    print('two', a, b)
+    print('two', a, b, datetime.datetime.now())
