@@ -8,3 +8,11 @@ class Values(db.Model):
     datetime = db.Column(db.DateTime, nullable=False)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
+
+
+class Correlation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    correlation = db.Column(db.Float, nullable=False)
+    value_id = db.Column(db.Integer, db.ForeignKey('values.id'))
+    value = db.relationship('Values', backref='correlation')
+
