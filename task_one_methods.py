@@ -30,6 +30,7 @@ def insert_data_to_db(a, b, fetch_time):
 def statistics_processes(new_values_id):
     raw_data_df = fetch_raw_data_from_db()
     correlation(raw_data_df, new_values_id)
+    standard_deviation(raw_data_df, new_values_id)
 
 
 def fetch_raw_data_from_db():
@@ -57,4 +58,28 @@ def fill_correlation_table(value, new_values_id):
         else:
             new_correlation = Correlation(correlation=0, value_id=new_values_id)
         db.session.add(new_correlation)
+        db.session.commit()
+
+
+def standard_deviation(df, new_values_id):
+    standard_deviation_a, standard_deviation_b = calculate_standard_deviation(df)
+    fill_standard_deviation_table(standard_deviation_a, standard_deviation_b, new_values_id)
+
+
+def calculate_standard_deviation(df):
+    standard_deviation_values = df.std(axis=0)
+    standard_deviation_a = standard_deviation_values['Value_a']
+    standard_deviation_b = standard_deviation_values['Value_b']
+    return standard_deviation_a, standard_deviation_b
+
+
+def fill_standard_deviation_table(value_a, value_b, new_values_id):
+    with app.app_context():
+        if str(value_a) != 'nan':
+            new_standard_deviation = StandardDeviation(std_deviation_a=value_a, std_deviation_b=value_b,
+                                                       value_id=new_values_id)
+        else:
+            new_standard_deviation = StandardDeviation(std_deviation_a=0, std_deviation_b=0,
+                                                       value_id=new_values_id)
+        db.session.add(new_standard_deviation)
         db.session.commit()

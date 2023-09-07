@@ -16,3 +16,10 @@ class Correlation(db.Model):
     value_id = db.Column(db.Integer, db.ForeignKey('values.id'))
     value = db.relationship('Values', backref='correlation')
 
+
+class StandardDeviation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    std_deviation_a = db.Column(db.Float, nullable=False)
+    std_deviation_b = db.Column(db.Float, nullable=False)
+    value_id = db.Column(db.Integer, db.ForeignKey('values.id'))
+    value = db.relationship('Values', backref='std_deviation')
