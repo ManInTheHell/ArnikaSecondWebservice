@@ -6,16 +6,19 @@ from app import app, db
 
 
 def task_one():
+    print(f'start task one in: {datetime.datetime.now()}')
     a, b, fetch_time = call_data_web_service()
     new_values_id_and_datetime = insert_data_to_db(a, b, fetch_time)
     statistics_processes(new_values_id_and_datetime)
+    print(f'end task one in: {datetime.datetime.now()}')
+    print('---------------------------------------------------')
 
 
 def call_data_web_service():
     response = requests.get('http://127.0.0.1:5000/params').json()
     a = response.get('a')
     b = response.get('b')
-    print('call one', a, b, datetime.datetime.now())
+    print('received values:', a, b)
     return a, b, datetime.datetime.now()
 
 

@@ -13,11 +13,11 @@ with app.app_context():
 scheduler = BackgroundScheduler()
 from task_one_methods import task_one
 from task_two_methods import task_two
-scheduler.add_job(task_one, 'cron', hour='0-23', second='*/5')
-scheduler.add_job(task_two, 'interval', seconds=30)
-# scheduler.add_job(task_one, 'cron', hour='9-17', minute='*/2')
-# scheduler.add_job(task_two, 'interval', hours=2)
-# scheduler.start()
+# scheduler.add_job(task_one, 'cron', hour='0-23', second='*/5')
+# scheduler.add_job(task_two, 'interval', seconds=30)
+scheduler.add_job(task_one, 'cron', hour='9-17', minute='*/2')
+scheduler.add_job(task_two, 'interval', hours=2)
+scheduler.start()
 
 
 from end_points import *
