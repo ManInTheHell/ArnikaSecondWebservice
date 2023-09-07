@@ -56,7 +56,7 @@ def fill_correlation_table(value, new_values_id):
         if str(value) != 'nan':
             new_correlation = Correlation(correlation=value, value_id=new_values_id)
         else:
-            new_correlation = Correlation(correlation=0, value_id=new_values_id)
+            new_correlation = Correlation(correlation=None, value_id=new_values_id)
         db.session.add(new_correlation)
         db.session.commit()
 
@@ -79,7 +79,7 @@ def fill_standard_deviation_table(value_a, value_b, new_values_id):
             new_standard_deviation = StandardDeviation(std_deviation_a=value_a, std_deviation_b=value_b,
                                                        value_id=new_values_id)
         else:
-            new_standard_deviation = StandardDeviation(std_deviation_a=0, std_deviation_b=0,
+            new_standard_deviation = StandardDeviation(std_deviation_a=None, std_deviation_b=None,
                                                        value_id=new_values_id)
         db.session.add(new_standard_deviation)
         db.session.commit()
