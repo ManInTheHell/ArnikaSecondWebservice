@@ -8,7 +8,6 @@ from app import app, db
 def task_one():
     a, b, fetch_time = call_data_web_service()
     new_values_id = insert_data_to_db(a, b, fetch_time)
-    # new_values_id = 1000
     statistics_processes(new_values_id)
 
 
@@ -30,8 +29,8 @@ def insert_data_to_db(a, b, fetch_time):
 
 def statistics_processes(new_values_id):
     raw_data_df = fetch_raw_data_from_db()
-    # correlation(raw_data_df, new_values_id)
-    # standard_deviation(raw_data_df, new_values_id)
+    correlation(raw_data_df, new_values_id)
+    standard_deviation(raw_data_df, new_values_id)
     max_min_diff(raw_data_df)
 
 
@@ -66,8 +65,8 @@ def fill_correlation_table(value, new_values_id):
 
 
 def standard_deviation(df, new_values_id):
-    standard_deviation_a, standard_deviation_b = calculate_standard_deviation(df)
-    fill_standard_deviation_table(standard_deviation_a, standard_deviation_b, new_values_id)
+    standard_deviations = calculate_standard_deviation(df)
+    fill_standard_deviation_table(standard_deviations, new_values_id)
 
 
 def calculate_standard_deviation(df):
@@ -79,11 +78,10 @@ def calculate_standard_deviation(df):
     return standard_deviation_a, standard_deviation_b
 
 
-def fill_standard_deviation_table(value_a, value_b, new_values_id):
-    # todo: use tuple
+def fill_standard_deviation_table(args, new_values_id):
     with app.app_context():
-        if str(value_a) != 'nan':
-            new_standard_deviation = StandardDeviation(std_deviation_a=value_a, std_deviation_b=value_b,
+        if str(args[0]) != 'nan':
+            new_standard_deviation = StandardDeviation(std_deviation_a=args[0], std_deviation_b=args[1],
                                                        value_id=new_values_id)
         else:
             new_standard_deviation = StandardDeviation(std_deviation_a=None, std_deviation_b=None,
