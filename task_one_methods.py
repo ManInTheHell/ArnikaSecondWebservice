@@ -1,14 +1,14 @@
 import requests
 import datetime
-import pandas as pd
+from pandas import DataFrame
 from data_models import *
 from app import app, db
 
 
 def task_one():
     a, b, fetch_time = call_data_web_service()
-    new_values_id = insert_data_to_db(a, b, fetch_time)
-    statistics_processes(new_values_id)
+    new_values_id_and_datetime = insert_data_to_db(a, b, fetch_time)
+    statistics_processes(new_values_id_and_datetime)
 
 
 def call_data_web_service():
@@ -21,30 +21,29 @@ def call_data_web_service():
 
 def insert_data_to_db(a, b, fetch_time):
     with app.app_context():
-        new_value = Values(value_a=a, value_b=b, datetime=fetch_time, date=fetch_time.date(), time=fetch_time.time())
+        new_value = Values(value_a=a, value_b=b, datetime=fetch_time)
         db.session.add(new_value)
         db.session.commit()
-        return new_value.id
+        return new_value.id, new_value.datetime
 
 
-def statistics_processes(new_values_id):
+def statistics_processes(new_values_id_and_datetime):
     raw_data_df = fetch_raw_data_from_db()
-    correlation(raw_data_df, new_values_id)
-    standard_deviation(raw_data_df, new_values_id)
+    correlation(raw_data_df, new_values_id_and_datetime)
+    standard_deviation(raw_data_df, new_values_id_and_datetime)
     max_min_diff(raw_data_df)
 
 
 def fetch_raw_data_from_db():
     with app.app_context():
-        query = db.session.query(Values.id, Values.value_a, Values.value_b, Values.datetime)
-        results = query.all()
-        df = pd.DataFrame(results, columns=['id', 'Value_a', 'Value_b', 'datetime'])
+        results = db.session.query(Values.id, Values.value_a, Values.value_b, Values.datetime).all()
+        df = DataFrame(results, columns=['id', 'Value_a', 'Value_b', 'datetime'])
         return df
 
 
-def correlation(df, new_values_id):
+def correlation(df, new_values_id_and_datetime):
     correlation_value = calculate_correlation(df)
-    fill_correlation_table(correlation_value, new_values_id)
+    fill_correlation_table(correlation_value, new_values_id_and_datetime)
 
 
 def calculate_correlation(df):
@@ -54,19 +53,21 @@ def calculate_correlation(df):
     return correlation_matrix.loc['Value_a', 'Value_b']
 
 
-def fill_correlation_table(value, new_values_id):
+def fill_correlation_table(value, new_values_id_and_datetime):
     with app.app_context():
         if str(value) != 'nan':
-            new_correlation = Correlation(correlation=value, value_id=new_values_id)
+            new_correlation = Correlation(correlation=value, value_id=new_values_id_and_datetime[0],
+                                          datetime=new_values_id_and_datetime[1])
         else:
-            new_correlation = Correlation(correlation=None, value_id=new_values_id)
+            new_correlation = Correlation(correlation=None, value_id=new_values_id_and_datetime[0],
+                                          datetime=new_values_id_and_datetime[1])
         db.session.add(new_correlation)
         db.session.commit()
 
 
-def standard_deviation(df, new_values_id):
+def standard_deviation(df, new_values_id_and_datetime):
     standard_deviations = calculate_standard_deviation(df)
-    fill_standard_deviation_table(standard_deviations, new_values_id)
+    fill_standard_deviation_table(standard_deviations, new_values_id_and_datetime)
 
 
 def calculate_standard_deviation(df):
@@ -78,14 +79,16 @@ def calculate_standard_deviation(df):
     return standard_deviation_a, standard_deviation_b
 
 
-def fill_standard_deviation_table(args, new_values_id):
+def fill_standard_deviation_table(args, new_values_id_and_datetime):
     with app.app_context():
         if str(args[0]) != 'nan':
             new_standard_deviation = StandardDeviation(std_deviation_a=args[0], std_deviation_b=args[1],
-                                                       value_id=new_values_id)
+                                                       value_id=new_values_id_and_datetime[0],
+                                                       datetime=new_values_id_and_datetime[1])
         else:
             new_standard_deviation = StandardDeviation(std_deviation_a=None, std_deviation_b=None,
-                                                       value_id=new_values_id)
+                                                       value_id=new_values_id_and_datetime[0],
+                                                       datetime=new_values_id_and_datetime[1])
         db.session.add(new_standard_deviation)
         db.session.commit()
 

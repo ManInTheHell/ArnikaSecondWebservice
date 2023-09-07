@@ -17,7 +17,10 @@ scheduler.add_job(task_one, 'cron', hour='0-23', second='*/5')
 scheduler.add_job(task_two, 'interval', seconds=30)
 # scheduler.add_job(task_one, 'cron', hour='9-17', minute='*/2')
 # scheduler.add_job(task_two, 'interval', hours=2)
-scheduler.start()
+# scheduler.start()
+
+
+from end_points import *
 
 if __name__ == '__main__':
     app.run(debug=True, port=5050)
